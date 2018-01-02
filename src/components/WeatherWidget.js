@@ -3,9 +3,7 @@ import PropTypes from 'prop-types'
 import DaysList from './DaysList'
 import ZipCodeForm from './ZipCodeForm'
 import getStyle from '../logic/WeatherWidgetStyle'
-import '../logic/buildForcast'
-
-const dayNames = ["Sun", "Mon", "Tue", "Wen", "Thu", "Fri", "Sat"];
+import buildForcast from '../logic/buildForcast'
 
 class WeatherWidget extends Component {
     constructor(props) {
@@ -32,7 +30,8 @@ class WeatherWidget extends Component {
 
       if((localStorage.getItem('forcast'))){
         let data = JSON.parse(localStorage.getItem('forcast'));
-        this.setState(forcast: buildForcast(data));
+        let forcast =  buildForcast(data);
+        this.setState(forcast: forcast);
       }
 
       else{
@@ -40,9 +39,13 @@ class WeatherWidget extends Component {
           results => {
             localStorage.setItem('forcast', results.json);
             return results.json();
-      }.then(data => this.setState(forcast: buildForcast(data));)
+      }).then(data => {
+        let forcast =  buildForcast(data);
+        this.setState(forcast: forcast);
+      });
 
     }
+  }
 
      render() {
        let child = undefined;
@@ -51,7 +54,7 @@ class WeatherWidget extends Component {
          child = (<ZipCodeForm zip={this.state.zip} onChange={this.handleChange} onSubmit={this.handleSubmit}/>)
        }
        else {
-         setForcast();
+         this.setForcast();
          child = (
            <DaysList selectedDayId={this.state.selectedDayId} days={this.state.forcast} clickHandler={this.handleClick}
              height={this.props.height ? this.props.height : undefined}
@@ -60,9 +63,6 @@ class WeatherWidget extends Component {
             />
 
           )
-        }
-        else {
-          child = <div> Retrieving weather data... </div>
         }
 
         return(

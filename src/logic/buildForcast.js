@@ -1,4 +1,5 @@
-export buildForcast = (data) => {
+const dayNames = ["Sun", "Mon", "Tue", "Wen", "Thu", "Fri", "Sat"];
+function buildForcast (data) {
 
   return data.list.reduce((days = {}, hour) => {
     let date = new Date(hour["dt_txt"].slice(0, 10));
@@ -29,3 +30,5 @@ export buildForcast = (data) => {
 
   })
 }
+
+export default buildForcast
