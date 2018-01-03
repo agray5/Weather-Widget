@@ -4,6 +4,10 @@ import DaysList from './DaysList'
 import ZipCodeForm from './ZipCodeForm'
 import getStyle from '../logic/WeatherWidgetStyle'
 import buildForcast from '../logic/buildForcast'
+import handleErrors from '../logic/handleHTTPErrors'
+import Msg from '../logic/Msg'
+import $ from 'jquery';
+window.jQuery = window.$ = $;
 
 class WeatherWidget extends Component {
     constructor(props) {
@@ -26,24 +30,40 @@ class WeatherWidget extends Component {
     }
 
     setForcast() {
-      if(this.state.forcast) return;
+      console.log("Setting forcast");
+      if(this.state.forcast !== undefined && Object.keys(this.state.forcast).length !== 0) {
+        console.log("Returning...")
+          return;
+      }
+
 
       if((localStorage.getItem('forcast'))){
+        console.log("Getting Forcast");
         let data = JSON.parse(localStorage.getItem('forcast'));
         let forcast =  buildForcast(data);
         this.setState(forcast: forcast);
       }
 
       else{
-        fetch('api.openweathermap.org/data/2.5/forecast?zip='+this.state.zip+',us&units=imperial&APPID=7b2437181ff01cfc1fa064493e70fc25').then(
-          results => {
-            localStorage.setItem('forcast', results.json);
-            return results.json();
-      }).then(data => {
-        let forcast =  buildForcast(data);
-        this.setState(forcast: forcast);
-      });
+        console.log("Fetching");
 
+        fetch('http://api.openweathermap.org/data/2.5/forecast?zip=77705,us&units=imperial&APPID=7b2437181ff01cfc1fa064493e70fc25')
+        .then(handleErrors)
+        .then(data => {
+          //if(data instanceof Msg) return data;
+
+          console.log("Data.json()");
+          return data.json()
+        })
+        .then(result => {
+
+          localStorage.setItem('forcast', JSON.stringify(result));
+
+          let forcast =  buildForcast(result);
+          console.log("forcast build", forcast);
+          this.setState(forcast: forcast);
+        })
+        .catch((err) => {console.log("Error: ", err)})
     }
   }
 
@@ -54,7 +74,13 @@ class WeatherWidget extends Component {
          child = (<ZipCodeForm zip={this.state.zip} onChange={this.handleChange} onSubmit={this.handleSubmit}/>)
        }
        else {
-         this.setForcast();
+         let possibleMsg = this.setForcast();
+         if(possibleMsg instanceof Msg){
+           child = (
+             <div> Error: {possibleMsg.msg} </div>
+           )
+         }
+         console.log("forcast", this.state.forcast)
          child = (
            <DaysList selectedDayId={this.state.selectedDayId} days={this.state.forcast} clickHandler={this.handleClick}
              height={this.props.height ? this.props.height : undefined}

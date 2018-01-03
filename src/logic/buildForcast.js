@@ -1,6 +1,7 @@
 const dayNames = ["Sun", "Mon", "Tue", "Wen", "Thu", "Fri", "Sat"];
 function buildForcast (data) {
-
+  console.log("Building forcast");
+  console.log("Data:", data)
   return data.list.reduce((days = {}, hour) => {
     let date = new Date(hour["dt_txt"].slice(0, 10));
     let day = dayNames[date.getDay()];
@@ -10,6 +11,8 @@ function buildForcast (data) {
       weatherType: hour.weather[0].main,
       weatherDesc: hour.weather[0].description
     }
+
+    console.log("Hour", hour, "date", date, "day", day, "time", time)
 
     // Defualt day object
     if(!days[day]) days[day] = {
