@@ -26,6 +26,12 @@ class WeatherWidget extends Component {
     handleSubmit(event) {
       console.log("Handle submit");
       this.setState({zipRecvd: true})
+      let possibleMsg = this.setForcast();
+    /*  if(possibleMsg instanceof Msg){
+        child = (
+          <div> Error: {possibleMsg.msg} </div>
+        )
+      }*/
       event.preventDefault();
     }
 
@@ -56,10 +62,11 @@ class WeatherWidget extends Component {
           return data.json()
         })
         .then(result => {
+          let list = result.list;
+          console.log("result", list)
+          localStorage.setItem('forcast', JSON.stringify(list));
 
-          localStorage.setItem('forcast', JSON.stringify(result));
-
-          let forcast =  buildForcast(result);
+          let forcast =  buildForcast(list);
           console.log("forcast build", forcast);
           this.setState(forcast: forcast);
         })
@@ -74,12 +81,7 @@ class WeatherWidget extends Component {
          child = (<ZipCodeForm zip={this.state.zip} onChange={this.handleChange} onSubmit={this.handleSubmit}/>)
        }
        else {
-         let possibleMsg = this.setForcast();
-         if(possibleMsg instanceof Msg){
-           child = (
-             <div> Error: {possibleMsg.msg} </div>
-           )
-         }
+
          console.log("forcast", this.state.forcast)
          child = (
            <DaysList selectedDayId={this.state.selectedDayId} days={this.state.forcast} clickHandler={this.handleClick}

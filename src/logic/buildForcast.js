@@ -1,18 +1,19 @@
 const dayNames = ["Sun", "Mon", "Tue", "Wen", "Thu", "Fri", "Sat"];
 function buildForcast (data) {
   console.log("Building forcast");
-  console.log("Data:", data)
-  return data.list.reduce((days = {}, hour) => {
+  console.log("Data:", data);
+  let days = {}
+  for(let hour in data){
+    console.log("days", days);
     let date = new Date(hour["dt_txt"].slice(0, 10));
     let day = dayNames[date.getDay()];
-    let time = hour["dt_txt"].slice(12, 18)
+    let time = hour["dt_txt"].slice(11, 16)
     let hourInfo = {
       temp: hour.main.temp,
       weatherType: hour.weather[0].main,
       weatherDesc: hour.weather[0].description
     }
 
-    console.log("Hour", hour, "date", date, "day", day, "time", time)
 
     // Defualt day object
     if(!days[day]) days[day] = {
@@ -30,8 +31,8 @@ function buildForcast (data) {
       days[day].low = hourInfo.temp;
 
     days[day][time] = hourInfo;
-
-  })
+  }
+  return days;
 }
 
 export default buildForcast
