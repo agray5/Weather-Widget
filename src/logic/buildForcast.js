@@ -1,10 +1,13 @@
-const dayNames = ["Sun", "Mon", "Tue", "Wen", "Thu", "Fri", "Sat"];
+const dayNames = ["Mon", "Tue", "Wen", "Thu", "Fri", "Sat", "Sun"];
 function buildForcast (data) {
   console.log("Building forcast");
   console.log("Data:", data);
-  let days = {}
+  let days = [];
+  let currDay;
+  let index;
   for(let hour in data){
-    console.log("days", days);
+    hour = data[hour];
+    console.log("days", JSON.parse(JSON.stringify(days)));
     let date = new Date(hour["dt_txt"].slice(0, 10));
     let day = dayNames[date.getDay()];
     let time = hour["dt_txt"].slice(11, 16)
@@ -14,23 +17,24 @@ function buildForcast (data) {
       weatherDesc: hour.weather[0].description
     }
 
-
     // Defualt day object
-    if(!days[day]) days[day] = {
-      id: date.getDay(),
-      low: 0,
-      high: 0,
-      weatherType: hourInfo.weatherType,
-      weatherDesc: hourInfo.weatherDesc
-    };
-
+    if(day !== currDay){
+      index = days.push({
+        day: day,
+        low: hourInfo.temp,
+        high: hourInfo.temp,
+        weatherType: hourInfo.weatherType,
+        weatherDesc: hourInfo.weatherDesc
+      }) - 1;
+      currDay = day;
+    }
     // Adjust days low and high
-    if (hourInfo.temp > days[day].high)
-      days[day].high = hourInfo.temp;
-    else if (hourInfo.temp < days[day].low)
-      days[day].low = hourInfo.temp;
+    if (hourInfo.temp > days[index].high)
+      days[index].high = hourInfo.temp;
+    else if (hourInfo.temp < days[index].low)
+      days[index].low = hourInfo.temp;
 
-    days[day][time] = hourInfo;
+    days[index][time] = hourInfo;
   }
   return days;
 }

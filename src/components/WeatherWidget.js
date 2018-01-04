@@ -14,9 +14,6 @@ class WeatherWidget extends Component {
       super(props);
       this.handleSubmit = this.handleSubmit.bind(this);
       this.handleChange = this.handleChange.bind(this);
-      this.state = {
-        forcast: {}
-      }
     }
 
     handleChange(event) {
@@ -26,12 +23,7 @@ class WeatherWidget extends Component {
     handleSubmit(event) {
       console.log("Handle submit");
       this.setState({zipRecvd: true})
-      let possibleMsg = this.setForcast();
-    /*  if(possibleMsg instanceof Msg){
-        child = (
-          <div> Error: {possibleMsg.msg} </div>
-        )
-      }*/
+      this.setForcast();
       event.preventDefault();
     }
 
@@ -67,7 +59,6 @@ class WeatherWidget extends Component {
           localStorage.setItem('forcast', JSON.stringify(list));
 
           let forcast =  buildForcast(list);
-          console.log("forcast build", forcast);
           this.setState(forcast: forcast);
         })
         .catch((err) => {console.log("Error: ", err)})
@@ -80,17 +71,17 @@ class WeatherWidget extends Component {
        if(!this.state.zipRecvd){
          child = (<ZipCodeForm zip={this.state.zip} onChange={this.handleChange} onSubmit={this.handleSubmit}/>)
        }
-       else {
-
-         console.log("forcast", this.state.forcast)
+       else if(this.state.forcast){
          child = (
            <DaysList selectedDayId={this.state.selectedDayId} days={this.state.forcast} clickHandler={this.handleClick}
              height={this.props.height ? this.props.height : undefined}
              width={this.props.width ? this.props.width : undefined}
              margin={this.props.margin ? this.props.margin : undefined}
             />
-
           )
+        }
+        else{
+          <div> Forcast loading...</div>
         }
 
         return(
