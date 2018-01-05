@@ -5,9 +5,7 @@ import ZipCodeForm from './ZipCodeForm'
 import getStyle from '../logic/WeatherWidgetStyle'
 import buildForcast from '../logic/buildForcast'
 import handleErrors from '../logic/handleHTTPErrors'
-import Msg from '../logic/Msg'
-import $ from 'jquery';
-window.jQuery = window.$ = $;
+import checkForTimeout from '../logic/timeout'
 
 class WeatherWidget extends Component {
     constructor(props) {
@@ -29,19 +27,21 @@ class WeatherWidget extends Component {
     }
 
     setForcast() {
+      let forcastJson = localStorage.getItem('forcast');
+      let forcastInfo = JSON.parse(localStorage.getItem('forcast_info'));
+
       if(this.state.forcast !== undefined && Object.keys(this.state.forcast).length !== 0) {
           return;
       }
-
-
-      if((localStorage.getItem('forcast'))){
-        let data = JSON.parse(localStorage.getItem('forcast'));
+      //Timeout is set for 10 minutes
+      if(forcastJson && forcastInfo && !checkForTimeout(forcastInfo.timeStamp, 600) && forcastInfo.zip === this.state.zip){
+        let data = JSON.parse(forcastJson);
         let forcast =  buildForcast(data);
         this.setState({forcast: forcast});
       }
 
       else{
-        fetch('http://api.openweathermap.org/data/2.5/forecast?zip=77705,us&units=imperial&APPID=7b2437181ff01cfc1fa064493e70fc25')
+        fetch('http://api.openweathermap.org/data/2.5/forecast?zip='+this.state.zip+',us&units=imperial&APPID=7b2437181ff01cfc1fa064493e70fc25')
         .then(handleErrors)
         .then(data => {
           return data.json()
@@ -49,6 +49,7 @@ class WeatherWidget extends Component {
         .then(result => {
           let list = result.list;
           localStorage.setItem('forcast', JSON.stringify(list));
+          localStorage.setItem('forcast_info', JSON.stringify({zip: this.state.zip, timeStamp: (Math.round(new Date().getTime()/1000))}));
 
           let forcast =  buildForcast(list);
           this.setState({forcast: forcast});
@@ -72,7 +73,6 @@ class WeatherWidget extends Component {
           child = (<ZipCodeForm zip={this.state.zip} onChange={this.handleChange} onSubmit={this.handleSubmit}/>)
         }
         else{
-          console.log("Neither");
           <div> Forcast loading...</div>
         }
 
@@ -89,17 +89,5 @@ WeatherWidget.propTypes = {
   width: PropTypes.number,
   margin: PropTypes.number,
 }
-
-const weathersData = [
-  {id: 0, weatherType: "cloudy", high: 90, low: 78},
-  {id: 1, weatherType: "sunny", high: 86, low: 79},
-  {id: 2, weatherType: "cloudy", high: 89, low: 76},
-  {id: 3, weatherType: "sunny", high: 87, low: 73},
-  {id: 4, weatherType: "cloudy", high: 85, low: 74},
-  {id: 5, weatherType: "cloudy", high: 88, low: 76},
-  {id: 6, weatherType: "rainy", high: 84, low: 72}
-]
-
-
 
 export default WeatherWidget
