@@ -7,7 +7,6 @@ function buildForcast (data) {
   let index;
   for(let hour in data){
     hour = data[hour];
-    console.log("days", JSON.parse(JSON.stringify(days)));
     let date = new Date(hour["dt_txt"].slice(0, 10));
     let day = dayNames[date.getDay()];
     let time = hour["dt_txt"].slice(11, 16)

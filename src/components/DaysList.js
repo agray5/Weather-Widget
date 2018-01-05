@@ -17,9 +17,11 @@ class DaysList extends React.Component {
   }
 
   render() {
-    let daysList = [];
-    for(var day in this.props.days) {
-      daysList.push(
+    console.log("props", this.props.days);
+    return (
+      <ul style={getStyle("DayList", this.props)}>
+      {this.props.days.map((day, id) => {
+        return(
         <Day
           key={day.id}
           {...day}
@@ -28,11 +30,8 @@ class DaysList extends React.Component {
           width={this.props.width ? this.props.width : undefined}
           margin={this.props.margin ? this.props.margin : undefined}
           selected={(day.id === this.state.selectedDayId ? true : false)}
-        />);
-    }
-    return(
-      <ul style={getStyle("DayList", this.props)}>
-        {daysList}
+        />)})
+      }
       </ul>
     )
   }
