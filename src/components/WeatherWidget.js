@@ -48,7 +48,7 @@ class WeatherWidget extends Component {
       }
 
       else{
-        fetch('http://api.openweathermap.org/data/2.5/forecast?zip='+this.state.zip+',us&units=imperial&APPID=7b2437181ff01cfc1fa064493e70fc25')
+        fetch('https://api.openweathermap.org/data/2.5/forecast?zip='+this.state.zip+',us&units=imperial&APPID=7b2437181ff01cfc1fa064493e70fc25')
         .then(handleErrors)
         .then(data => {
           return data.json()
