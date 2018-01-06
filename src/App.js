@@ -7,10 +7,10 @@ class WeatherApp extends Component {
   render() {
     return (
       <div className="WeatherApp">
-        <header className="WeatherApp-header">
+        <header className="WeatherApp-header"></header>
         {/*<img src={logo} className="WeatherApp-logo" alt="logo" />*/}
           <h1 className="WeatherApp-title">Weather App</h1>
-        </header>
+
         <div className="WeatherWidget">
           <WeatherWidget />
         </div>

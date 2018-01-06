@@ -6,6 +6,7 @@ import getStyle from '../logic/WeatherWidgetStyle'
 import buildForcast from '../logic/buildForcast'
 import handleErrors from '../logic/handleHTTPErrors'
 import checkForTimeout from '../logic/timeout'
+import isValidUSZip from '../logic/misc'
 
 class WeatherWidget extends Component {
     constructor(props) {
@@ -21,7 +22,13 @@ class WeatherWidget extends Component {
       this.setState({zip: event.target.value});
     }
 
-    handleSubmit(event) {;
+    handleSubmit(event) {
+      //Check that zip is valid
+      if (!isValidUSZip(this.state.zip)){
+        alert("Invalid Zip Code!");
+        event.preventDefault();
+        return;
+      }
       this.setForcast();
       event.preventDefault();
     }
@@ -72,10 +79,6 @@ class WeatherWidget extends Component {
         else if(!this.state.zipRecvd){
           child = (<ZipCodeForm zip={this.state.zip} onChange={this.handleChange} onSubmit={this.handleSubmit}/>)
         }
-        else{
-          <div> Forcast loading...</div>
-        }
-
         return(
           <div className="weatherContainer" style={getStyle('WeatherWidget', this.props)}>
             {child}
